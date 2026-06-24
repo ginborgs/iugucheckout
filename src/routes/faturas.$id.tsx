@@ -12,7 +12,8 @@ export const Route = createFileRoute("/faturas/$id")({
 
 function FaturaDetail() {
   const { id } = Route.useParams();
-  const checkoutUrl = `https://checkout.lugu.com/invoices/${id.slice(0, 7).toLowerCase()}-f50...`;
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const checkoutUrl = `${origin}/checkout/${id}`;
 
   const Field = ({ label, children }: { label: string; children?: React.ReactNode }) => (
     <div>
