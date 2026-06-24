@@ -20,7 +20,7 @@ function Login() {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password || !checked) return;
-    navigate({ to: "/faturas" });
+    navigate({ to: "/faturas/$id", params: { id: "74EB30A7F50F45C69B24DB4A144BCA33" } });
   };
 
   return (
