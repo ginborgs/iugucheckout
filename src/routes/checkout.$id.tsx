@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CreditCard, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -14,18 +14,22 @@ export const Route = createFileRoute("/checkout/$id")({
 
 function Checkout() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
   const [card, setCard] = useState("");
   const [exp, setExp] = useState("");
   const [cvv, setCvv] = useState("");
   const [name, setName] = useState("");
   const [human, setHuman] = useState(false);
-  const [paid, setPaid] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
-  const canPay = card.length >= 13 && exp && cvv && name && human;
+  const canPay = card.length >= 13 && exp && cvv && name && human && !processing;
 
   const onPay = () => {
     if (!canPay) return;
-    setPaid(true);
+    setProcessing(true);
+    setTimeout(() => {
+      navigate({ to: "/pagamento/sucesso/$id", params: { id } });
+    }, 900);
   };
 
   return (
@@ -67,85 +71,78 @@ function Checkout() {
             <span>Aprovação</span>
           </div>
           <div className="h-1 bg-[#e5e7eb] rounded mb-8 overflow-hidden">
-            <div className={`h-full bg-[#1a1a2e] transition-all ${paid ? "w-full" : "w-1/2"}`} />
+            <div className={`h-full bg-[#1a1a2e] transition-all ${processing ? "w-full" : "w-1/2"}`} />
           </div>
 
-          {paid ? (
-            <div className="border border-emerald-200 bg-emerald-50 rounded-lg p-8 text-center">
-              <h3 className="text-2xl font-bold text-emerald-700 mb-2">Pagamento aprovado!</h3>
-              <p className="text-sm text-emerald-800">Sua fatura foi processada com sucesso.</p>
+          <div className="border border-[#e5e7eb] rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-5">Forma de pagamento - Cartão de crédito</h3>
+            <div className="flex items-center gap-2 text-sm mb-4 text-[#1a1a2e]">
+              <CreditCard size={18}/> <span className="font-medium">Pagar com Cartão de crédito</span>
             </div>
-          ) : (
-            <div className="border border-[#e5e7eb] rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-5">Forma de pagamento - Cartão de crédito</h3>
-              <div className="flex items-center gap-2 text-sm mb-4 text-[#1a1a2e]">
-                <CreditCard size={18}/> <span className="font-medium">Pagar com Cartão de crédito</span>
-              </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm">Número do cartão*</label>
-                  <div className="relative">
-                    <input
-                      value={card}
-                      onChange={(e) => setCard(e.target.value.replace(/\D/g, "").slice(0, 19))}
-                      className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5]"
-                    />
-                    <CreditCard size={18} className="absolute right-3 top-1/2 mt-0.5 -translate-y-1/2 text-[#94a3b8]"/>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm">Expiração MM/AA*</label>
-                    <input value={exp} onChange={(e)=>setExp(e.target.value)} className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5]" />
-                  </div>
-                  <div>
-                    <label className="text-sm">CVV*</label>
-                    <input value={cvv} onChange={(e)=>setCvv(e.target.value.replace(/\D/g, "").slice(0,4))} className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5]" />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm">Nome do titular*</label>
-                  <input value={name} onChange={(e)=>setName(e.target.value)} className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5]" />
-                </div>
-                <div>
-                  <label className="text-sm">Número de parcelas</label>
-                  <select className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5] bg-white">
-                    <option>1 x R$ 21.500,00</option>
-                    <option>2 x R$ 10.750,00</option>
-                    <option>3 x R$ 7.166,67</option>
-                  </select>
-                </div>
-
-                <div className="flex justify-end pt-2">
-                  <label className="flex items-center gap-3 border border-[#d1d5db] rounded p-3 bg-white shadow-sm cursor-pointer">
-                    <input type="checkbox" checked={human} onChange={(e)=>setHuman(e.target.checked)} />
-                    <span className="text-sm">Sou humano</span>
-                    <div className="ml-2 text-[10px] text-[#9ca3af] text-center leading-tight border-l border-[#e5e7eb] pl-2">
-                      <div className="font-semibold text-[#4b5563]">hCaptcha</div>
-                      <div>Privacidade - Termos e Condições</div>
-                    </div>
-                  </label>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm">Número do cartão*</label>
+                <div className="relative">
+                  <input
+                    value={card}
+                    onChange={(e) => setCard(e.target.value.replace(/\D/g, "").slice(0, 19))}
+                    className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5]"
+                  />
+                  <CreditCard size={18} className="absolute right-3 top-1/2 mt-0.5 -translate-y-1/2 text-[#94a3b8]"/>
                 </div>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm">Expiração MM/AA*</label>
+                  <input value={exp} onChange={(e)=>setExp(e.target.value)} className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5]" />
+                </div>
+                <div>
+                  <label className="text-sm">CVV*</label>
+                  <input value={cvv} onChange={(e)=>setCvv(e.target.value.replace(/\D/g, "").slice(0,4))} className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5]" />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm">Nome do titular*</label>
+                <input value={name} onChange={(e)=>setName(e.target.value)} className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5]" />
+              </div>
+              <div>
+                <label className="text-sm">Número de parcelas</label>
+                <select className="w-full border border-[#e5e7eb] rounded px-3 py-2.5 mt-1 outline-none focus:border-[#3b56f5] bg-white">
+                  <option>1 x R$ 21.500,00</option>
+                  <option>2 x R$ 10.750,00</option>
+                  <option>3 x R$ 7.166,67</option>
+                </select>
+              </div>
 
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  onClick={() => navigator.share?.({ url: window.location.href }).catch(()=>{}) }
-                  className="border border-[#e5e7eb] text-[#1a1a2e] px-6 py-2 rounded hover:bg-[#f8fafc]"
-                >
-                  Compartilhar
-                </button>
-                <button
-                  disabled={!canPay}
-                  onClick={onPay}
-                  className="bg-[#3b56f5] disabled:bg-[#a5b4fc] disabled:cursor-not-allowed text-white px-8 py-2 rounded hover:bg-[#2e44d9]"
-                >
-                  Pagar
-                </button>
+              <div className="flex justify-end pt-2">
+                <label className="flex items-center gap-3 border border-[#d1d5db] rounded p-3 bg-white shadow-sm cursor-pointer">
+                  <input type="checkbox" checked={human} onChange={(e)=>setHuman(e.target.checked)} />
+                  <span className="text-sm">Sou humano</span>
+                  <div className="ml-2 text-[10px] text-[#9ca3af] text-center leading-tight border-l border-[#e5e7eb] pl-2">
+                    <div className="font-semibold text-[#4b5563]">hCaptcha</div>
+                    <div>Privacidade - Termos e Condições</div>
+                  </div>
+                </label>
               </div>
             </div>
-          )}
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => navigator.share?.({ url: window.location.href }).catch(()=>{}) }
+                className="border border-[#e5e7eb] text-[#1a1a2e] px-6 py-2 rounded hover:bg-[#f8fafc]"
+              >
+                Compartilhar
+              </button>
+              <button
+                disabled={!canPay}
+                onClick={onPay}
+                className="bg-[#3b56f5] disabled:bg-[#a5b4fc] disabled:cursor-not-allowed text-white px-8 py-2 rounded hover:bg-[#2e44d9]"
+              >
+                {processing ? "Processando..." : "Pagar"}
+              </button>
+            </div>
+          </div>
         </section>
       </div>
       <footer className="px-8 py-4 text-sm text-[#64748b]">
