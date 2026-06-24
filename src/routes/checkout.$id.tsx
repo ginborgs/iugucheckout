@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CreditCard, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -14,18 +14,22 @@ export const Route = createFileRoute("/checkout/$id")({
 
 function Checkout() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
   const [card, setCard] = useState("");
   const [exp, setExp] = useState("");
   const [cvv, setCvv] = useState("");
   const [name, setName] = useState("");
   const [human, setHuman] = useState(false);
-  const [paid, setPaid] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
-  const canPay = card.length >= 13 && exp && cvv && name && human;
+  const canPay = card.length >= 13 && exp && cvv && name && human && !processing;
 
   const onPay = () => {
     if (!canPay) return;
-    setPaid(true);
+    setProcessing(true);
+    setTimeout(() => {
+      navigate({ to: "/pagamento/sucesso/$id", params: { id } });
+    }, 900);
   };
 
   return (

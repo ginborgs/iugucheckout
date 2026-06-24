@@ -14,6 +14,7 @@ import { Route as FaturasRouteImport } from './routes/faturas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FaturasIdRouteImport } from './routes/faturas.$id'
 import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
+import { Route as PagamentoSucessoIdRouteImport } from './routes/pagamento.sucesso.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -40,6 +41,11 @@ const CheckoutIdRoute = CheckoutIdRouteImport.update({
   path: '/checkout/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PagamentoSucessoIdRoute = PagamentoSucessoIdRouteImport.update({
+  id: '/pagamento/sucesso/$id',
+  path: '/pagamento/sucesso/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/faturas/$id': typeof FaturasIdRoute
+  '/pagamento/sucesso/$id': typeof PagamentoSucessoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/faturas/$id': typeof FaturasIdRoute
+  '/pagamento/sucesso/$id': typeof PagamentoSucessoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +70,25 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/faturas/$id': typeof FaturasIdRoute
+  '/pagamento/sucesso/$id': typeof PagamentoSucessoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/faturas' | '/login' | '/checkout/$id' | '/faturas/$id'
+  fullPaths:
+    | '/'
+    | '/faturas'
+    | '/login'
+    | '/checkout/$id'
+    | '/faturas/$id'
+    | '/pagamento/sucesso/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/faturas' | '/login' | '/checkout/$id' | '/faturas/$id'
+  to:
+    | '/'
+    | '/faturas'
+    | '/login'
+    | '/checkout/$id'
+    | '/faturas/$id'
+    | '/pagamento/sucesso/$id'
   id:
     | '__root__'
     | '/'
@@ -75,6 +96,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/checkout/$id'
     | '/faturas/$id'
+    | '/pagamento/sucesso/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -82,6 +104,7 @@ export interface RootRouteChildren {
   FaturasRoute: typeof FaturasRouteWithChildren
   LoginRoute: typeof LoginRoute
   CheckoutIdRoute: typeof CheckoutIdRoute
+  PagamentoSucessoIdRoute: typeof PagamentoSucessoIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -121,6 +144,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pagamento/sucesso/$id': {
+      id: '/pagamento/sucesso/$id'
+      path: '/pagamento/sucesso/$id'
+      fullPath: '/pagamento/sucesso/$id'
+      preLoaderRoute: typeof PagamentoSucessoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -140,6 +170,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaturasRoute: FaturasRouteWithChildren,
   LoginRoute: LoginRoute,
   CheckoutIdRoute: CheckoutIdRoute,
+  PagamentoSucessoIdRoute: PagamentoSucessoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
