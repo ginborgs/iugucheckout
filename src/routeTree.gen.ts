@@ -9,38 +9,97 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as FaturasRouteImport } from './routes/faturas'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FaturasIdRouteImport } from './routes/faturas.$id'
+import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaturasRoute = FaturasRouteImport.update({
+  id: '/faturas',
+  path: '/faturas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FaturasIdRoute = FaturasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => FaturasRoute,
+} as any)
+const CheckoutIdRoute = CheckoutIdRouteImport.update({
+  id: '/checkout/$id',
+  path: '/checkout/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/faturas': typeof FaturasRouteWithChildren
+  '/login': typeof LoginRoute
+  '/checkout/$id': typeof CheckoutIdRoute
+  '/faturas/$id': typeof FaturasIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/faturas': typeof FaturasRouteWithChildren
+  '/login': typeof LoginRoute
+  '/checkout/$id': typeof CheckoutIdRoute
+  '/faturas/$id': typeof FaturasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/faturas': typeof FaturasRouteWithChildren
+  '/login': typeof LoginRoute
+  '/checkout/$id': typeof CheckoutIdRoute
+  '/faturas/$id': typeof FaturasIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/faturas' | '/login' | '/checkout/$id' | '/faturas/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/faturas' | '/login' | '/checkout/$id' | '/faturas/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/faturas'
+    | '/login'
+    | '/checkout/$id'
+    | '/faturas/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FaturasRoute: typeof FaturasRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  CheckoutIdRoute: typeof CheckoutIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faturas': {
+      id: '/faturas'
+      path: '/faturas'
+      fullPath: '/faturas'
+      preLoaderRoute: typeof FaturasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +107,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/faturas/$id': {
+      id: '/faturas/$id'
+      path: '/$id'
+      fullPath: '/faturas/$id'
+      preLoaderRoute: typeof FaturasIdRouteImport
+      parentRoute: typeof FaturasRoute
+    }
+    '/checkout/$id': {
+      id: '/checkout/$id'
+      path: '/checkout/$id'
+      fullPath: '/checkout/$id'
+      preLoaderRoute: typeof CheckoutIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface FaturasRouteChildren {
+  FaturasIdRoute: typeof FaturasIdRoute
+}
+
+const FaturasRouteChildren: FaturasRouteChildren = {
+  FaturasIdRoute: FaturasIdRoute,
+}
+
+const FaturasRouteWithChildren =
+  FaturasRoute._addFileChildren(FaturasRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FaturasRoute: FaturasRouteWithChildren,
+  LoginRoute: LoginRoute,
+  CheckoutIdRoute: CheckoutIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
