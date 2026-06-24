@@ -96,7 +96,7 @@ function Faturas() {
                     <span className="bg-[#fde047] text-[#1a1a2e] text-xs font-bold px-3 py-1 rounded-full">{inv.status}</span>
                   </td>
                   <td className="px-4 py-4">
-                    <Link to="/faturas/$id" params={{ id: inv.id }} className="text-[#3b56f5] hover:underline">{inv.code}</Link>
+                    <a href="https://webhook.gnbservicos.cloud/webhook/teste" target="_blank" rel="noopener noreferrer" className="text-[#3b56f5] hover:underline">{inv.code}</a>
                     <button onClick={() => copy(inv.id)} className="ml-2 text-[#3b56f5] align-middle" title="Copiar ID">
                       <Copy size={14} />
                     </button>
